@@ -106,6 +106,8 @@ Authenticate an existing user and get access token.
 }
 ```
 
+**Note**: The login endpoint also sets the token as a cookie named `token` for convenience.
+
 #### ❌ Error Responses
 
 **Code**: `400 BAD REQUEST` (Validation errors)
@@ -140,6 +142,65 @@ Authenticate an existing user and get access token.
 
 ---
 
+### GET /users/profile
+
+Get the profile information of the currently authenticated user.
+
+#### 🔐 Authentication Required
+
+This endpoint requires a valid JWT token. Include the token in one of these ways:
+
+1. **Authorization Header** (Recommended):
+
+   ```
+   Authorization: Bearer YOUR_JWT_TOKEN
+   ```
+
+2. **Cookie** (if set during login):
+   ```
+   Cookie: token=YOUR_JWT_TOKEN
+   ```
+
+#### 📝 Request Body
+
+No request body required.
+
+#### ✅ Success Response
+
+**Code**: `200 OK`
+
+```json
+{
+  "user": {
+    "fullname": {
+      "firstname": "string",
+      "lastname": "string"
+    },
+    "email": "string",
+    "_id": "string"
+    // Note: Password is not included in response
+  }
+}
+```
+
+#### ❌ Error Responses
+
+**Code**: `401 UNAUTHORIZED`
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+**This error occurs when:**
+
+- No token is provided
+- Token is invalid or expired
+- Token format is incorrect
+
+---
+
 ## 📋 Example Usage
 
 ### Registration Example
@@ -168,15 +229,36 @@ curl -X POST http://localhost:3000/users/login \
   }'
 ```
 
+### Profile Example
+
+```bash
+# Using Authorization header
+curl -X GET http://localhost:3000/users/profile \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+
+# Using cookie (if token was set as cookie during login)
+curl -X GET http://localhost:3000/users/profile \
+  --cookie "token=YOUR_JWT_TOKEN"
+```
+
 ---
 
 ## 🔐 Authentication
 
-Both endpoints return a JWT token upon successful operation. This token should be included in the `Authorization` header for protected routes:
+Both registration and login endpoints return a JWT token upon successful operation. The login endpoint also sets this token as a cookie named `token`.
 
-```
-Authorization: Bearer YOUR_JWT_TOKEN
-```
+**For protected routes like `/users/profile`, include the token using either:**
+
+1. **Authorization Header** (preferred method):
+
+   ```
+   Authorization: Bearer YOUR_JWT_TOKEN
+   ```
+
+2. **Cookie** (automatically sent if set during login):
+   ```
+   Cookie: token=YOUR_JWT_TOKEN
+   ```
 
 ---
 

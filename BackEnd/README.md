@@ -294,6 +294,263 @@ Register a new captain account with vehicle information.
 }
 ```
 
+**Error Response (400):**
+
+```json
+{
+  "message": "Captain with this email already exists"
+}
+```
+
+---
+
+#### POST `/captains/login`
+
+Login with existing captain credentials.
+
+**Request Body:**
+
+```json
+{
+  "email": "jane@example.com",
+  "password": "password123"
+}
+```
+
+**Validation Rules:**
+
+- `email`: Required, valid email format
+- `password`: Required, min 6 characters
+
+**Success Response (200):**
+
+```json
+{
+  "captain": {
+    "fullname": {
+      "firstname": "Jane",
+      "lastname": "Smith"
+    },
+    "email": "jane@example.com",
+    "status": "inactive",
+    "vehicle": {
+      "color": "Red",
+      "plate": "ABC123",
+      "capacity": 4,
+      "vehicleType": "car"
+    },
+    "_id": "captain_id_here"
+  },
+  "token": "jwt_token_here"
+}
+```
+
+**Error Responses:**
+
+- `400`: Validation errors
+- `401`: Invalid email
+- `400`: Wrong password
+
+---
+
+#### GET `/captains/profile`
+
+Get current captain's profile information including vehicle details.
+
+**Authentication Required:** Yes
+
+**Headers:**
+
+```
+Authorization: Bearer your_jwt_token
+```
+
+**Success Response (200):**
+
+```json
+{
+  "captain": {
+    "fullname": {
+      "firstname": "Jane",
+      "lastname": "Smith"
+    },
+    "email": "jane@example.com",
+    "status": "inactive",
+    "vehicle": {
+      "color": "Red",
+      "plate": "ABC123",
+      "capacity": 4,
+      "vehicleType": "car"
+    },
+    "location": {
+      "lat": null,
+      "lng": null
+    },
+    "_id": "captain_id_here"
+  }
+}
+```
+
+**Error Response (401):**
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+---
+
+#### GET `/captains/logout`
+
+Logout current captain and blacklist token.
+
+**Authentication Required:** Yes
+
+**Headers:**
+
+```
+Authorization: Bearer your_jwt_token
+```
+
+**Success Response (200):**
+
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+**Error Response (401):**
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+---
+
+### Usage Examples for Captain Endpoints
+
+**Login Captain:**
+
+```bash
+curl -X POST http://localhost:3000/captains/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "jane@example.com",
+    "password": "password123"
+  }'
+```
+
+**Get Captain Profile:**
+
+```bash
+curl -X GET http://localhost:3000/captains/profile \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE"
+```
+
+**Logout Captain:**
+
+```bash
+curl -X GET http://localhost:3000/captains/logout \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE"
+```
+
+**Using JavaScript:**
+
+```javascript
+// Login Captain
+const loginResponse = await fetch("http://localhost:3000/captains/login", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    email: "jane@example.com",
+    password: "password123",
+  }),
+});
+
+const captainData = await loginResponse.json();
+localStorage.setItem("captainToken", captainData.token);
+
+// Get Captain Profile
+const token = localStorage.getItem("captainToken");
+const profileResponse = await fetch("http://localhost:3000/captains/profile", {
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+});
+
+const captainProfile = await profileResponse.json();
+
+// Logout Captain
+const logoutResponse = await fetch("http://localhost:3000/captains/logout", {
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+});
+```
+
+#### POST `/captains/register`
+
+Register a new captain account with vehicle information.
+
+**Request Body:**
+
+```json
+{
+  "fullname": {
+    "firstname": "Jane",
+    "lastname": "Smith"
+  },
+  "email": "jane@example.com",
+  "password": "password123",
+  "vehicle": {
+    "color": "Red",
+    "plate": "ABC123",
+    "capacity": 4,
+    "vehicleType": "car"
+  }
+}
+```
+
+**Validation Rules:**
+
+- `fullname.firstname`: Required, min 3 characters
+- `fullname.lastname`: Optional, min 3 characters if provided
+- `email`: Required, valid email format
+- `password`: Required, min 6 characters
+- `vehicle.color`: Required, min 3 characters
+- `vehicle.plate`: Required, min 3 characters
+- `vehicle.capacity`: Required, number greater than 0
+- `vehicle.vehicleType`: Required, must be one of: "car", "motorcycle", "auto"
+
+**Success Response (201):**
+
+```json
+{
+  "captain": {
+    "fullname": {
+      "firstname": "Jane",
+      "lastname": "Smith"
+    },
+    "email": "jane@example.com",
+    "status": "inactive",
+    "vehicle": {
+      "color": "Red",
+      "plate": "ABC123",
+      "capacity": 4,
+      "vehicleType": "car"
+    },
+    "_id": "captain_id_here"
+  },
+  "token": "jwt_token_here"
+}
+```
+
 **Error Responses:**
 
 ```json

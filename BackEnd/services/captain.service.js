@@ -35,5 +35,6 @@ module.exports.createCaptain = async (
       vehicleType,
     },
   });
+  await captain.save();
   return captain;
 };

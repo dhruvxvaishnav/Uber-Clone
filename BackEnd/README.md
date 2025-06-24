@@ -1,6 +1,6 @@
 # Backend API Documentation
 
-A Node.js/Express backend API with user authentication, built for learning purposes.
+A Node.js/Express backend API with user and captain authentication, built for learning purposes.
 
 ## 🚀 Quick Start
 
@@ -57,16 +57,20 @@ Server will run on `http://localhost:3000`
 ```
 BackEnd/
 ├── controllers/          # Request handlers
-│   └── user.controller.js
+│   ├── user.controller.js
+│   └── captain.controller.js
 ├── models/              # Database models
 │   ├── user.model.js
+│   ├── captain.model.js
 │   └── blacklistToken.model.js
 ├── routes/              # API routes
-│   └── user.routes.js
+│   ├── user.routes.js
+│   └── captain.routes.js
 ├── middlewares/         # Custom middleware
 │   └── auth.middleware.js
 ├── services/            # Business logic
-│   └── user.service.js
+│   ├── user.service.js
+│   └── captain.service.js
 ├── db/                  # Database connection
 │   └── db.js
 ├── app.js              # Express app configuration
@@ -83,7 +87,7 @@ BackEnd/
 
 ## 📋 API Endpoints
 
-### Authentication Endpoints
+### User Authentication Endpoints
 
 #### POST `/users/register`
 
@@ -229,12 +233,93 @@ Logout current user and blacklist token.
 }
 ```
 
+---
+
+### Captain Authentication Endpoints
+
+#### POST `/captains/register`
+
+Register a new captain account with vehicle information.
+
+**Request Body:**
+
+```json
+{
+  "fullname": {
+    "firstname": "Jane",
+    "lastname": "Smith"
+  },
+  "email": "jane@example.com",
+  "password": "password123",
+  "vehicle": {
+    "color": "Red",
+    "plate": "ABC123",
+    "capacity": 4,
+    "vehicleType": "car"
+  }
+}
+```
+
+**Validation Rules:**
+
+- `fullname.firstname`: Required, min 3 characters
+- `fullname.lastname`: Optional, min 3 characters if provided
+- `email`: Required, valid email format
+- `password`: Required, min 6 characters
+- `vehicle.color`: Required, min 3 characters
+- `vehicle.plate`: Required, min 3 characters
+- `vehicle.capacity`: Required, number greater than 0
+- `vehicle.vehicleType`: Required, must be one of: "car", "motorcycle", "auto"
+
+**Success Response (201):**
+
+```json
+{
+  "captain": {
+    "fullname": {
+      "firstname": "Jane",
+      "lastname": "Smith"
+    },
+    "email": "jane@example.com",
+    "status": "inactive",
+    "vehicle": {
+      "color": "Red",
+      "plate": "ABC123",
+      "capacity": 4,
+      "vehicleType": "car"
+    },
+    "_id": "captain_id_here"
+  },
+  "token": "jwt_token_here"
+}
+```
+
+**Error Responses:**
+
+```json
+{
+  "errors": [
+    {
+      "msg": "Vehicle type must be one of: car, motorcycle, auto",
+      "param": "vehicle.vehicleType",
+      "location": "body"
+    }
+  ]
+}
+```
+
+```json
+{
+  "message": "Captain with this email already exists"
+}
+```
+
 ## 🛠️ How Authentication Works
 
 ### JWT Token Generation
 
 - Tokens expire in 24 hours
-- Contains user ID for identification
+- Contains user/captain ID for identification
 - Used for protecting routes
 
 ### Token Blacklisting
@@ -253,7 +338,7 @@ Logout current user and blacklist token.
 
 ### Using cURL
 
-**Register:**
+**Register User:**
 
 ```bash
 curl -X POST http://localhost:3000/users/register \
@@ -265,7 +350,25 @@ curl -X POST http://localhost:3000/users/register \
   }'
 ```
 
-**Login:**
+**Register Captain:**
+
+```bash
+curl -X POST http://localhost:3000/captains/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fullname": {"firstname": "Jane", "lastname": "Smith"},
+    "email": "jane@example.com",
+    "password": "password123",
+    "vehicle": {
+      "color": "Red",
+      "plate": "ABC123",
+      "capacity": 4,
+      "vehicleType": "car"
+    }
+  }'
+```
+
+**Login User:**
 
 ```bash
 curl -X POST http://localhost:3000/users/login \
@@ -292,7 +395,32 @@ curl -X GET http://localhost:3000/users/logout \
 
 ### Using JavaScript/Fetch
 
-**Register:**
+**Register Captain:**
+
+```javascript
+const response = await fetch("http://localhost:3000/captains/register", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    fullname: { firstname: "Jane", lastname: "Smith" },
+    email: "jane@example.com",
+    password: "password123",
+    vehicle: {
+      color: "Red",
+      plate: "ABC123",
+      capacity: 4,
+      vehicleType: "car",
+    },
+  }),
+});
+
+const data = await response.json();
+console.log(data);
+```
+
+**Register User:**
 
 ```javascript
 const response = await fetch("http://localhost:3000/users/register", {
@@ -373,14 +501,14 @@ const userData = await response.json();
 
 ## 🚀 Next Steps for Learning
 
-1. **Add more endpoints** - CRUD operations
-2. **Database relationships** - User profiles, posts
-3. **File uploads** - Profile pictures
-4. **Email verification** - Confirm accounts
-5. **Password reset** - Forgot password flow
-6. **Rate limiting** - Prevent abuse
-7. **API documentation** - Swagger/OpenAPI
-8. **Testing** - Unit and integration tests
+1. **Add login for captains** - Captain login endpoint
+2. **Add captain profile/logout** - Protected captain routes
+3. **Database relationships** - Link users and captains
+4. **Location tracking** - Real-time captain locations
+5. **Ride booking system** - Connect users with captains
+6. **File uploads** - Profile pictures
+7. **Email verification** - Confirm accounts
+8. **Rate limiting** - Prevent abuse
 
 ## 🤝 Contributing
 

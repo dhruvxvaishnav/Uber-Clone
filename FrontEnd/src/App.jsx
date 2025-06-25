@@ -1,12 +1,10 @@
-"use client";
-
 import React from "react";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Home from "./pages/Home";
 import UserLogin from "./pages/UserLogin";
 import UserSignup from "./pages/UserSignup";
-import CaptainLogin from "./pages/CaptainLogin";
-import CaptainSignup from "./pages/CaptainSignup";
+import { CaptainLogin } from "./pages/CaptainLogin";
+import { CaptainSignup } from "./pages/CaptainSignup";
 
 const App = () => {
   return (

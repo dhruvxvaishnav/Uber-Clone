@@ -4,7 +4,7 @@ import UserLogin from "./UserLogin";
 const Home = () => {
   return (
     <div>
-      <div className="bg-[url(/Traffic_Light.png)] w-full pt-8 h-screen bg-red-400 flex justify-between flex-col">
+      <div className="bg-[url(/Traffic_Light.png)] w-full pt-8 h-screen bg-red-400 flex justify-between flex-col bg-cover bg-center">
         <img className="w-16 ml-8" src="Uber_logo_2018.png" alt="Uber Logo" />
         <div className="bg-white pb-7 px-4 py-4">
           <h2 className="text-3xl font-bold">Get Started With Uber</h2>
